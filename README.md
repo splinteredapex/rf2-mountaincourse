@@ -8,7 +8,7 @@ arrives, the build is re-run and everything follows the road.
 | Version | Height data | Status |
 | --- | --- | --- |
 | v1 | Open 30 m elevation (Copernicus) | Pilot section built |
-| v2 | GPS-logged laps | Planned |
+| v2 | GPS-logged laps | Logger app ready (`android-logger/`) |
 | v3 | 0.5 m LiDAR, if licensed | Planned |
 
 ## Run it
@@ -24,6 +24,12 @@ The traced lap is 60.75 km against the official 60.72 km (+0.06 %).
 
 All settings (road width, mesh density, section limits) are in `config/course.yaml`.
 Getting the result into the game is described in `docs/windows-steps.md`.
+
+## Recording the course from a car
+
+`android-logger/` is an Android app that logs GNSS (phone, or an RTK receiver), motion sensors and
+camera sync marks while you drive. Install and driving steps: [android-logger/README.md](android-logger/README.md).
+Import a run with `python pipeline/import_drive.py <run>.zip`.
 
 ## What v1 is and is not
 
