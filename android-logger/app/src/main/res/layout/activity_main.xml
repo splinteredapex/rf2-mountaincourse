@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SPLINTEREDAPEX"
+                android:textColor="@color/accent"
+                android:textSize="13sp"
+                android:letterSpacing="0.2"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                android:text="Course Logger"
+                android:textColor="@color/text"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <!-- Recording -->
+            <LinearLayout style="@style/Card">
+                <TextView style="@style/CardTitle" android:text="Recording" />
+                <TextView android:id="@+id/recBig" style="@style/CardBig" android:text="Ready" />
+                <TextView android:id="@+id/recDetail" style="@style/CardDetail" android:text="" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnRecord"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="@drawable/btn_record"
+                android:text="Start recording"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="14dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnSync"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/btn_secondary"
+                    android:text="Camera sync"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/btnMark"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/btn_secondary"
+                    android:text="Mark point"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Live status -->
+            <LinearLayout style="@style/Card">
+                <TextView style="@style/CardTitle" android:text="External RTK receiver" />
+                <TextView android:id="@+id/extBig" style="@style/CardBig" android:text="Not used" />
+                <TextView android:id="@+id/extDetail" style="@style/CardDetail" android:text="" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/Card">
+                <TextView style="@style/CardTitle" android:text="Phone GNSS" />
+                <TextView android:id="@+id/gnssBig" style="@style/CardBig" android:text="Waiting" />
+                <TextView android:id="@+id/gnssDetail" style="@style/CardDetail" android:text="" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/Card">
+                <TextView style="@style/CardTitle" android:text="Motion sensors" />
+                <TextView android:id="@+id/sensBig" style="@style/CardBig" android:text="Idle" />
+                <TextView android:id="@+id/sensDetail" style="@style/CardDetail" android:text="" />
+            </LinearLayout>
+
+            <!-- Settings -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="8dp"
+                android:text="Setup"
+                android:textColor="@color/text"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout android:id="@+id/settingsBox" style="@style/Card">
+                <TextView style="@style/CardTitle" android:text="External receiver" />
+                <Spinner
+                    android:id="@+id/spSource"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp" />
+                <Button
+                    android:id="@+id/btnBtDevice"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/btn_secondary"
+                    android:text="Choose Bluetooth device"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text" />
+                <EditText android:id="@+id/etBaud" style="@style/Field" android:hint="Baud rate (USB-serial adapters only, 38400)" android:inputType="number" />
+                <CheckBox
+                    android:id="@+id/cbConfigure"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Set u-blox to 10 Hz with raw data (USB only, not saved to receiver)"
+                    android:textColor="@color/text" />
+
+                <TextView style="@style/CardTitle" android:layout_marginTop="14dp" android:text="RTK corrections (NTRIP)" />
+                <CheckBox
+                    android:id="@+id/cbNtrip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Send corrections to the receiver"
+                    android:textColor="@color/text" />
+                <EditText android:id="@+id/etHost" style="@style/Field" android:hint="Caster host, e.g. rtk2go.com" android:inputType="textUri" />
+                <EditText android:id="@+id/etPort" style="@style/Field" android:hint="Port (2101)" android:inputType="number" />
+                <EditText android:id="@+id/etMount" style="@style/Field" android:hint="Mountpoint" />
+                <EditText android:id="@+id/etUser" style="@style/Field" android:hint="Username" />
+                <EditText android:id="@+id/etPass" style="@style/Field" android:hint="Password" android:inputType="textPassword" />
+
+                <TextView style="@style/CardTitle" android:layout_marginTop="14dp" android:text="Run notes" />
+                <EditText
+                    android:id="@+id/etNotes"
+                    style="@style/Field"
+                    android:hint="e.g. antenna on roof centre, left lane, dry"
+                    android:singleLine="false"
+                    android:minLines="2" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnSessions"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/btn_secondary"
+                android:text="Recorded runs: share or delete"
+                android:textAllCaps="false"
+                android:textColor="@color/text"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Full-screen clock for the dashcam to film -->
+    <LinearLayout
+        android:id="@+id/syncOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/syncLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FILM THIS SCREEN"
+            android:textColor="@color/accent"
+            android:textSize="18sp"
+            android:letterSpacing="0.2"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/syncClock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="monospace"
+            android:text="00:00:00.000"
+            android:textColor="#FFFFFF"
+            android:textSize="44sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/syncHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="GPS time (UTC). Tap to close."
+            android:textColor="@color/muted"
+            android:textSize="14sp" />
+    </LinearLayout>
+</FrameLayout>

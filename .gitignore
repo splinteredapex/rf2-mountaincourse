@@ -3,3 +3,7 @@ build/
 __pycache__/
 *.pyc
 .venv/
+android-logger/.gradle/
+android-logger/build/
+android-logger/app/build/
+android-logger/local.properties
