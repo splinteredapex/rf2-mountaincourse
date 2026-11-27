@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- u-blox (ZED-F9P native USB) -->
+    <usb-device vendor-id="5446" />
+    <!-- FTDI, Silicon Labs CP210x, WCH CH340: common USB-serial bridges on GNSS boards -->
+    <usb-device vendor-id="1027" />
+    <usb-device vendor-id="4292" />
+    <usb-device vendor-id="6790" />
+</resources>

@@ -1,0 +1,56 @@
+name: Android logger
+
+on:
+  push:
+    paths:
+      - "android-logger/**"
+      - ".github/workflows/android-logger.yml"
+  workflow_dispatch:
+
+# One build at a time, so the newest push always ends up as the release.
+concurrency:
+  group: android-logger
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android-logger
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build APK
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug
+          cp app/build/outputs/apk/debug/app-debug.apk SplinteredApex-Logger.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SplinteredApex-Logger
+          path: android-logger/SplinteredApex-Logger.apk
+
+      # One always-current download link for the phone:
+      # https://github.com/<owner>/<repo>/releases/download/logger-latest/SplinteredApex-Logger.apk
+      - name: Publish to the "logger-latest" release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete logger-latest --cleanup-tag -y || true
+          gh release create logger-latest SplinteredApex-Logger.apk \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "Course Logger (latest build)" \
+            --notes "Built from ${GITHUB_REF_NAME} at ${GITHUB_SHA::7}. Open this page on your phone and tap SplinteredApex-Logger.apk to install."
