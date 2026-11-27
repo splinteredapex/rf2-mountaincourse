@@ -101,7 +101,6 @@ class LoggerService : Service() {
     private fun logEvent(kind: String, label: String) {
         val e = events ?: return
         val number = when (kind) {
-            "SYNC" -> ++Live.syncCount
             "MARK" -> ++Live.markCount
             else -> 0
         }

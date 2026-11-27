@@ -52,37 +52,17 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <Button
+                android:id="@+id/btnMark"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="14dp"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnSync"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="5dp"
-                    android:background="@drawable/btn_secondary"
-                    android:text="Camera sync"
-                    android:textAllCaps="false"
-                    android:textColor="@color/text"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/btnMark"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="5dp"
-                    android:background="@drawable/btn_secondary"
-                    android:text="Mark point"
-                    android:textAllCaps="false"
-                    android:textColor="@color/text"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                android:background="@drawable/btn_secondary"
+                android:text="Mark point"
+                android:textAllCaps="false"
+                android:textColor="@color/text"
+                android:textSize="16sp" />
 
             <!-- Live status -->
             <LinearLayout style="@style/Card">
@@ -172,45 +152,4 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Full-screen clock for the dashcam to film -->
-    <LinearLayout
-        android:id="@+id/syncOverlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#000000"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/syncLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="FILM THIS SCREEN"
-            android:textColor="@color/accent"
-            android:textSize="18sp"
-            android:letterSpacing="0.2"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/syncClock"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:fontFamily="monospace"
-            android:text="00:00:00.000"
-            android:textColor="#FFFFFF"
-            android:textSize="44sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/syncHint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center"
-            android:text="GPS time (UTC). Tap to close."
-            android:textColor="@color/muted"
-            android:textSize="14sp" />
-    </LinearLayout>
 </FrameLayout>

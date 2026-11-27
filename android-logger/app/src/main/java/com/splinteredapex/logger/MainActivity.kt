@@ -7,7 +7,6 @@ import android.app.AlertDialog
 import android.bluetooth.BluetoothManager
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Build
@@ -30,9 +29,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import java.io.File
-import java.util.Calendar
 import java.util.Locale
-import java.util.TimeZone
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -52,9 +49,6 @@ class MainActivity : Activity() {
     private lateinit var extDetail: TextView
     private lateinit var btnRecord: Button
     private lateinit var settingsBox: View
-    private lateinit var syncOverlay: View
-    private lateinit var syncClock: TextView
-    private lateinit var syncLabel: TextView
     private lateinit var btnBtDevice: Button
 
     private val good by lazy { getColor(R.color.good) }
@@ -65,11 +59,6 @@ class MainActivity : Activity() {
     private val tick = object : Runnable {
         override fun run() { refresh(); ui.postDelayed(this, 200) }
     }
-    private var syncFlashUntil = 0L
-    private val clockTick = object : Runnable {
-        override fun run() { refreshClock(); ui.postDelayed(this, 16) }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -89,16 +78,11 @@ class MainActivity : Activity() {
         extBig = findViewById(R.id.extBig); extDetail = findViewById(R.id.extDetail)
         btnRecord = findViewById(R.id.btnRecord)
         settingsBox = findViewById(R.id.settingsBox)
-        syncOverlay = findViewById(R.id.syncOverlay)
-        syncClock = findViewById(R.id.syncClock)
-        syncLabel = findViewById(R.id.syncLabel)
         btnBtDevice = findViewById(R.id.btnBtDevice)
 
         btnRecord.setOnClickListener { toggleRecording() }
-        findViewById<Button>(R.id.btnSync).setOnClickListener { showSync() }
         findViewById<Button>(R.id.btnMark).setOnClickListener { mark() }
         findViewById<Button>(R.id.btnSessions).setOnClickListener { showRuns() }
-        syncOverlay.setOnClickListener { hideSync() }
         btnBtDevice.setOnClickListener { chooseBluetooth() }
         bindSettings()
         askPermissions()
@@ -158,39 +142,9 @@ class MainActivity : Activity() {
         toast("Point ${Live.markCount + 1} marked")
     }
 
-    private fun showSync() {
-        if (Live.recording) LoggerService.send(this, LoggerService.ACTION_EVENT, "SYNC", "")
-        else toast("Not recording: this sync will not be saved")
-        syncLabel.text = if (Live.recording) "SYNC ${Live.syncCount + 1}: FILM THIS SCREEN" else "NOT RECORDING"
-        syncOverlay.visibility = View.VISIBLE
-        syncFlashUntil = SystemClock.elapsedRealtime() + 300
-        beep()
-        ui.post(clockTick)
-    }
-
-    private fun hideSync() {
-        syncOverlay.visibility = View.GONE
-        ui.removeCallbacks(clockTick)
-    }
-
     private fun beep() {
         if (tone == null) tone = runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, 100) }.getOrNull()
         tone?.startTone(ToneGenerator.TONE_PROP_BEEP2, 250)
-    }
-
-    private fun refreshClock() {
-        val flash = SystemClock.elapsedRealtime() < syncFlashUntil
-        syncOverlay.setBackgroundColor(if (flash) Color.WHITE else Color.BLACK)
-        syncClock.setTextColor(if (flash) Color.BLACK else Color.WHITE)
-        val g = Live.gnssUtcNowMs()
-        val ms = g ?: System.currentTimeMillis()
-        val c = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply { timeInMillis = ms }
-        syncClock.text = "%02d:%02d:%02d.%03d".format(
-            Locale.US, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND), c.get(Calendar.MILLISECOND)
-        )
-        findViewById<TextView>(R.id.syncHint).text =
-            if (g != null) "GPS time (UTC). Hold in view of the camera for 3 s, then tap."
-            else "Phone clock: no GPS fix yet. Tap to close."
     }
 
     // ---------------- Live status ----------------
@@ -207,12 +161,12 @@ class MainActivity : Activity() {
             val s = (SystemClock.elapsedRealtimeNanos() - Live.startElapsedNs) / 1_000_000_000L
             recBig.text = "● %d:%02d:%02d".format(s / 3600, (s / 60) % 60, s % 60)
             recBig.setTextColor(getColor(R.color.accent))
-            recDetail.text = "${Live.sessionName}\n${"%.1f".format(Live.bytesWritten / 1e6)} MB   syncs ${Live.syncCount}   marks ${Live.markCount}" +
+            recDetail.text = "${Live.sessionName}\n${"%.1f".format(Live.bytesWritten / 1e6)} MB   marks ${Live.markCount}" +
                 if (Live.lastError.isNotEmpty()) "\n${Live.lastError}" else ""
         } else {
             recBig.text = "Ready"
             recBig.setTextColor(text)
-            recDetail.text = "Film the Camera sync screen at the start and end of every run."
+            recDetail.text = "Tap Start, wait for a GNSS fix, then drive."
         }
 
         // Phone GNSS

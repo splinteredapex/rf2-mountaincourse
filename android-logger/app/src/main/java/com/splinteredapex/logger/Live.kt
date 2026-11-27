@@ -9,7 +9,6 @@ object Live {
     @Volatile var startElapsedNs = 0L
     @Volatile var bytesWritten = 0L
     @Volatile var markCount = 0
-    @Volatile var syncCount = 0
     @Volatile var lastError = ""
 
     // Phone GNSS
@@ -25,7 +24,7 @@ object Live {
     @Volatile var rawCarrierValid = 0
     @Volatile var dualFrequency = false
 
-    /** GNSS UTC minus elapsedRealtime, in ms. Lets the sync screen show true GPS time. */
+    /** GNSS UTC minus elapsedRealtime, in ms. Used to stamp events with GPS time. */
     @Volatile var utcOffsetMs = Long.MIN_VALUE
 
     // Motion sensors (events per second, updated once a second)
@@ -58,7 +57,7 @@ object Live {
     }
 
     fun resetForSession() {
-        bytesWritten = 0; markCount = 0; syncCount = 0; lastError = ""
+        bytesWritten = 0; markCount = 0; lastError = ""
         fixCount = 0; rawEpochs = 0; rawSignals = 0; rawCarrierValid = 0
         extBytes = 0; ntripBytes = 0
     }

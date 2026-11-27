@@ -7,7 +7,6 @@ Writes data/drives/<run>/:
   track.csv     best position per epoch, used by the track build
                 (RTK fixed from the external receiver where available, else phone GNSS)
   track.gpx     same, for viewing in Google Earth / GPX tools
-  sync.csv      camera sync marks: GPS time shown on the phone screen at each mark
   marks.csv     points marked with the "Mark point" button, with position
   summary.txt   what the run contains and how good it is
 
@@ -179,12 +178,6 @@ def main(argv=None):
                      f"({(best['source'] == 'rtk').mean() * 100:.0f} % RTK)")
 
         if events is not None:
-            sync = events[events["kind"] == "SYNC"].copy()
-            if len(sync):
-                sync["gnss_utc"] = pd.to_datetime(sync["gnss_utc_ms"], unit="ms", utc=True)
-                sync[["number", "t_ns", "gnss_utc_ms", "gnss_utc"]].to_csv(out / "sync.csv", index=False)
-                lines.append(f"Camera syncs: {len(sync)}. In the video, read the clock on the phone screen at the "
-                             f"first white flash and match it to gnss_utc in sync.csv.")
             marks = events[events["kind"] == "MARK"].copy()
             if len(marks):
                 for col in ("lat", "lon", "h_ellipsoid_m"):

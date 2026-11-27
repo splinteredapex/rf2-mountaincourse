@@ -28,7 +28,7 @@ Getting the result into the game is described in `docs/windows-steps.md`.
 ## Recording the course from a car
 
 `android-logger/` is an Android app that logs GNSS (phone, or an RTK receiver), motion sensors and
-camera sync marks while you drive. Install and driving steps: [android-logger/README.md](android-logger/README.md).
+marked points while you drive. Install and driving steps: [android-logger/README.md](android-logger/README.md).
 Import a run with `python pipeline/import_drive.py <run>.zip`.
 
 ## What v1 is and is not

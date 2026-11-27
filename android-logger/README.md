@@ -22,7 +22,7 @@ New versions install over the old one from the same link. Runs already recorded 
 | `sensors.csv.gz` | Accelerometer, gyro, magnetometer, barometer, orientation | about 200 to 400 Hz |
 | `external_raw.ubx`, `external_fix.csv` | RTK receiver stream and parsed fixes, if one is connected | up to 10 Hz |
 | `ntrip_rtcm.bin` | RTK corrections received, kept for reprocessing | |
-| `events.csv` | Camera sync flashes and marked points | |
+| `events.csv` | Start, stop and marked points | |
 | `run.json` | Device, settings, notes | |
 
 Every row has `t_ns`, one shared phone clock, so all files line up exactly.
@@ -47,10 +47,9 @@ Every row has `t_ns`, one shared phone clock, so all files line up exactly.
 
 1. Mount the phone (and antenna) rigidly. Note where in **Run notes** (e.g. "antenna roof centre, phone windscreen").
 2. Start recording, wait until the GNSS card shows a fix (and **RTK FIXED** if using a receiver).
-3. Tap **Camera sync** and hold the phone so the dashcam sees the screen for 3 seconds. Do the same at the end.
-4. Drive at road-legal speeds. Tap **Mark point** at landmarks (start line, junctions) if useful.
-5. Stop recording. **Recorded runs > Share** sends the .zip to Google Drive or email.
-6. On the PC: `python pipeline/import_drive.py run_YYYYMMDD_HHMMSS.zip`
+3. Drive at road-legal speeds. Tap **Mark point** at landmarks (start line, junctions) if useful.
+4. Stop recording. **Recorded runs > Share** sends the .zip to Google Drive or email.
+5. On the PC: `python pipeline/import_drive.py run_YYYYMMDD_HHMMSS.zip`
 
 The Mountain Course is a public road: drive both directions and both lanes where safe, then the
 pipeline averages the runs and offsets them to the centreline.
