@@ -1,0 +1,10 @@
+numpy
+scipy
+shapely
+pyproj
+rasterio
+pyarrow
+pyyaml
+matplotlib
+pandas
+pytest

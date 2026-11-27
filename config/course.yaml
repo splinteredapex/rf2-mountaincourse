@@ -1,0 +1,86 @@
+# Snaefell Mountain Course build configuration.
+# Everything the build produces is derived from this file plus the data it points to.
+
+course:
+  name: Snaefell Mountain Course
+  official_length_km: 60.72
+
+data:
+  roads: data/raw/iom_segments.parquet
+  dem: data/raw/Copernicus_DSM_COG_10_N54_00_W005_00_DEM.tif
+
+route:
+  closed: true
+  off_route_penalty: 25        # cost multiplier for roads that are not on the preferred list
+  preferred_refs: [A1, A2, A3, A18]
+  preferred_names: []
+  # Rough coordinates are fine: each waypoint snaps to the nearest preferred road.
+  waypoints:
+    - {name: Grandstand,        lat: 54.1670, lon: -4.4790}
+    - {name: Quarterbridge,     lat: 54.1590, lon: -4.4990}
+    - {name: Union Mills,       lat: 54.1695, lon: -4.5330}
+    - {name: Ballacraine,       lat: 54.2030, lon: -4.6230}
+    - {name: Kirk Michael,      lat: 54.2850, lon: -4.5870}
+    - {name: Ballaugh Bridge,   lat: 54.3100, lon: -4.5400}
+    - {name: Ramsey,            lat: 54.3225, lon: -4.3850}
+    - {name: Bungalow,          lat: 54.2510, lon: -4.4630}
+    - {name: Creg-ny-Baa,       lat: 54.2040, lon: -4.4680}
+  # Known gap: the route follows the modern junction at Governor's Bridge, not the old-road dip the races use.
+
+elevation:
+  dem_smooth_px: 1.0           # blur of the 30 m elevation grid, in cells
+  profile_smooth_m: 100        # heavy, because the open data includes treetops and roofs
+  use_drive_profile: true      # use data/road_profile.csv (logged drives) where it exists
+  min_passes: 1                # ignore stretches driven fewer times than this
+  drive_fade_m: 200            # distance over which the road rejoins open data beyond the drives
+
+road:
+  width_m: 7.0                 # placeholder until measured from video or logged laps
+  lateral_quads: 8             # mesh columns across the road (about 0.9 m each)
+  station_step_m: 1.0          # mesh rows along the road
+  crossfall: 0.025             # 2.5 % fall from the crown to each edge
+  centreline_tolerance_m: 0.5  # how far the smoothed line may move from the map polyline
+  chunk_m: 250                 # road is split into objects of this length for culling
+  uv_tile_m: 4.0
+
+corridor:                      # ground strip either side of the road, blended into the terrain
+  offsets_m: [0.5, 2, 5, 9, 14, 22, 32, 45]   # distances beyond the road edge
+  blend_m: 12                  # distance over which road height blends to terrain height
+  verge_drop_m: 0.0
+
+drives:                        # fusing logged runs into a road profile (pipeline/fuse_drives.py)
+  station_step_m: 2.0
+  max_lateral_m: 15            # ignore samples further than this from the course centreline
+  max_h_acc_m: 20              # ignore fixes with worse reported horizontal accuracy
+  min_speed_mps: 2.0           # ignore samples taken while stopped
+  max_gap_s: 5                 # a longer gap in the log starts a new pass
+  max_station_jump_m: 150
+  min_pass_m: 200
+  max_fill_m: 40               # bridge gaps between samples up to this long
+  baro_rate_hz: 10
+  gps_level_window_s: 180      # GPS sets the barometer's level over this time scale
+  drift_wavelength_m: 600      # passes are aligned to each other above this length scale only
+  iterations: 6
+  outlier_floor_m: 1.0
+  final_smooth_m: 6            # smoothing of the fused profile
+  rtk_weight: 25               # an RTK pass counts this many times a phone pass
+
+far_terrain:
+  grid_m: 30
+  margin_m: 600
+  sink_m: 0.5
+  uv_tile_m: 20.0
+
+materials:                     # preview colours only; real materials are set in Blender / ModDev
+  road_asphalt:  [0.25, 0.25, 0.27]
+  road_pitlane:  [0.35, 0.35, 0.37]
+  grass_verge:   [0.25, 0.45, 0.20]
+  grass_terrain: [0.22, 0.38, 0.18]
+  gate:          [0.90, 0.10, 0.10]
+
+sections:
+  pilot:                       # Union Mills to Crosby (starts just after Braddan Bridge)
+    start_km: 2.80
+    end_km: 7.80
+    finish_m: 300              # timing line, metres after the section start
+    pit: {start_m: 40, length_m: 220, width_m: 5.0, taper_m: 30}
