@@ -30,6 +30,9 @@ route:
 elevation:
   dem_smooth_px: 1.0           # blur of the 30 m elevation grid, in cells
   profile_smooth_m: 100        # heavy, because the open data includes treetops and roofs
+  use_drive_profile: true      # use data/road_profile.csv (logged drives) where it exists
+  min_passes: 1                # ignore stretches driven fewer times than this
+  drive_fade_m: 200            # distance over which the road rejoins open data beyond the drives
 
 road:
   width_m: 7.0                 # placeholder until measured from video or logged laps
@@ -44,6 +47,23 @@ corridor:                      # ground strip either side of the road, blended i
   offsets_m: [0.5, 2, 5, 9, 14, 22, 32, 45]   # distances beyond the road edge
   blend_m: 12                  # distance over which road height blends to terrain height
   verge_drop_m: 0.0
+
+drives:                        # fusing logged runs into a road profile (pipeline/fuse_drives.py)
+  station_step_m: 2.0
+  max_lateral_m: 15            # ignore samples further than this from the course centreline
+  max_h_acc_m: 20              # ignore fixes with worse reported horizontal accuracy
+  min_speed_mps: 2.0           # ignore samples taken while stopped
+  max_gap_s: 5                 # a longer gap in the log starts a new pass
+  max_station_jump_m: 150
+  min_pass_m: 200
+  max_fill_m: 40               # bridge gaps between samples up to this long
+  baro_rate_hz: 10
+  gps_level_window_s: 180      # GPS sets the barometer's level over this time scale
+  drift_wavelength_m: 600      # passes are aligned to each other above this length scale only
+  iterations: 6
+  outlier_floor_m: 1.0
+  final_smooth_m: 6            # smoothing of the fused profile
+  rtk_weight: 25               # an RTK pass counts this many times a phone pass
 
 far_terrain:
   grid_m: 30

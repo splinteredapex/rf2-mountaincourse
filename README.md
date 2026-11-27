@@ -8,7 +8,7 @@ arrives, the build is re-run and everything follows the road.
 | Version | Height data | Status |
 | --- | --- | --- |
 | v1 | Open 30 m elevation (Copernicus) | Pilot section built |
-| v2 | GPS-logged laps | Planned |
+| v2 | Logged drives (phone GPS + barometer; RTK if available) | Pipeline ready, waiting for runs |
 | v3 | 0.5 m LiDAR, if licensed | Planned |
 
 ## Run it
@@ -19,6 +19,17 @@ python pipeline/fetch_data.py        # downloads open road and elevation data (a
 python pipeline/route.py             # traces the course, writes data/course_centreline.csv
 python pipeline/build_track.py pilot # writes build/pilot/track.obj
 ```
+
+### Adding logged drives
+
+```
+python pipeline/import_drive.py run_YYYYMMDD_HHMMSS.zip   # once per run shared from the logger app
+python pipeline/fuse_drives.py                            # all runs -> data/road_profile.csv and .png
+python pipeline/build_track.py pilot                      # uses the drive profile where it exists
+```
+
+Runs can be partial, overlapping and in either direction; they are stitched and averaged.
+See `docs/capture-guide.md` for how to drive them. `pytest` checks the fusion against simulated runs.
 
 The traced lap is 60.75 km against the official 60.72 km (+0.06 %).
 

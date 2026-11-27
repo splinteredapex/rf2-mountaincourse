@@ -6,3 +6,5 @@ rasterio
 pyarrow
 pyyaml
 matplotlib
+pandas
+pytest

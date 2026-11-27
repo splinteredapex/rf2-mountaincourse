@@ -40,7 +40,8 @@ class Dem:
 
     def at(self, e: np.ndarray, n: np.ndarray) -> np.ndarray:
         lon, lat = TO_LONLAT.transform(e, n)
-        col, row = self.inv * (np.asarray(lon), np.asarray(lat))
+        lon, lat, t = np.asarray(lon), np.asarray(lat), self.inv
+        col, row = t.a * lon + t.b * lat + t.c, t.d * lon + t.e * lat + t.f
         return map_coordinates(self.z, [row - 0.5, col - 0.5], order=1, mode="nearest")
 
 
@@ -142,6 +143,14 @@ def build(section_name: str):
 
     zc = road_profile()
 
+    # Logged drives, if any: replace the open-data road profile where drives cover it.
+    delta = np.zeros(nst)
+    drive_cover = 0.0
+    prof_path = ROOT / "data/road_profile.csv"
+    if cfg["elevation"].get("use_drive_profile", True) and prof_path.exists():
+        delta, drive_cover = drive_delta(prof_path, st, zc, cfg["elevation"])
+        zc = zc + delta
+
     # Curvature check: the corridor ribbon folds over itself inside bends tighter than its width.
     heading = np.unwrap(np.arctan2(tn, te))
     curv = np.abs(np.gradient(heading, st))
@@ -178,6 +187,8 @@ def build(section_name: str):
     w = smoothstep((beyond - shift) / rib["blend_m"])
     w = np.where(beyond <= 0, 0.0, w)
     ground = ground_height(E.ravel(), N.ravel()).reshape(nst, ncols)
+    # Carry the drive correction into the ground beside the road, fading out across the corridor.
+    ground = ground + delta[:, None] * (1 - smoothstep(beyond / side[-1]))
     Z = plane * (1 - w) + (ground - rib["verge_drop_m"] * np.minimum(w * 4, 1.0)) * w
     Z = np.where(beyond <= 0, plane, Z)
 
@@ -254,6 +265,8 @@ def build(section_name: str):
         "height_min_asl_m": round(float(zc.min()), 1), "height_max_asl_m": round(float(zc.max()), 1),
         "tightest_radius_m": round(float(min_radius), 1), "corridor_half_width_m": round(float(edge), 1),
         "corridor_folds": bool(min_radius < edge),
+        "height_source": "logged drives" if drive_cover > 0 else "open 30 m data",
+        "drive_coverage_pct": round(100 * drive_cover, 1),
     }
     (out / "build_info.yaml").write_text(yaml.safe_dump(info, sort_keys=False))
     preview(out / "preview.png", st - s0, pe - e0, pn - n0, zc, section_name)
@@ -262,6 +275,30 @@ def build(section_name: str):
     if info["corridor_folds"]:
         print("  WARNING: a bend is tighter than the corridor width; the verge mesh overlaps itself there.")
     return info
+
+
+def drive_delta(path: Path, st: np.ndarray, z_open: np.ndarray, ecfg: dict):
+    """Correction to add to the open-data profile, from data/road_profile.csv (see fuse_drives.py).
+
+    Where drives do not reach, the correction fades to zero so the road rejoins the open-data profile.
+    """
+    rows = list(csv.DictReader(path.open()))
+    ps = np.array([float(r["station_m"]) for r in rows])
+    ph = np.array([float(r["height_m"]) for r in rows])
+    pn = np.array([int(r["n_passes"]) for r in rows])
+    keep = pn >= ecfg.get("min_passes", 1)
+    ps, ph = ps[keep], ph[keep]
+    if len(ps) < 2:
+        return np.zeros(len(st)), 0.0
+    step = float(np.median(np.diff(ps)))
+    i = np.searchsorted(ps, st).clip(1, len(ps) - 1)
+    near = np.where(np.abs(st - ps[i - 1]) <= np.abs(ps[i] - st), i - 1, i)
+    dist = np.abs(st - ps[near])                       # distance to the nearest covered station
+    covered = (dist <= step) & (ps[i] - ps[i - 1] <= 2.5 * step) | (dist < 1e-6)
+    d = np.interp(st, ps, ph) - z_open
+    d_near = ph[near] - np.interp(ps[near], st, z_open)
+    fade = 1 - smoothstep(dist / ecfg.get("drive_fade_m", 200.0))
+    return np.where(covered, d, d_near * fade), float(covered.mean())
 
 
 def preview(path, s, x, y, z, title):
@@ -274,7 +311,7 @@ def preview(path, s, x, y, z, title):
     a.scatter([x[-1]], [y[-1]], color="red", zorder=3, label="end")
     a.set_aspect("equal"); a.set_title(f"{title}: plan view (metres, north up)"); a.legend(); a.grid(alpha=.3)
     b.plot(s, z, color="#1f77b4"); b.set_xlabel("distance along section (m)"); b.set_ylabel("height above sea level (m)")
-    b.set_title("road height profile (open 30 m data, smoothed)"); b.grid(alpha=.3)
+    b.set_title("road height profile"); b.grid(alpha=.3)
     fig.tight_layout(); fig.savefig(path, dpi=110); plt.close(fig)
 
 
