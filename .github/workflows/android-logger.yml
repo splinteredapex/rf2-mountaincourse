@@ -7,6 +7,11 @@ on:
       - ".github/workflows/android-logger.yml"
   workflow_dispatch:
 
+# One build at a time, so the newest push always ends up as the release.
+concurrency:
+  group: android-logger
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
